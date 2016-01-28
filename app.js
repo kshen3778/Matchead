@@ -10,7 +10,7 @@ var passport = require('passport');
 
 //Connect to MongoDB Mongoose instance
 var mongoose = require("mongoose");
-mongoose.connect(mongo);
+mongoose.connect("mongodb://kshen3778-matchead-2452413:27017/db");
 require('./models/Posts');
 require('./models/Comments');
 require('./models/User');
