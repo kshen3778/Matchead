@@ -4,59 +4,6 @@ angular.module('chart.js',[]);
 var charts = angular.module('myModule',['chart.js']);
 var app = angular.module('flapperNews', ['ui.router', 'myModule']);
 //var chartApp = angular.module('myApp', ['chart.js']);
-app.factory('posts', ['$http', 'auth', function($http, auth){
-  var o = {
-    posts: []
-  };
-  //query to get('/posts') route to load all posts
-  o.getAll = function(){
-    return $http.get('/posts').success(function(data){
-      angular.copy(data, o.posts); //copy returned data to the client side posts list
-    });
-  };
-  //query to post('/posts') route to create post
-  o.create = function(post){
-    return $http.post('/posts', post, {
-      //pass auth JWT token as an Authorization header
-      headers: {Authorization: 'Bearer ' + auth.getToken()}
-    }).success(function(data){
-      o.posts.push(data);
-    });
-  };
-  //query to upvote post route
-  o.upvote = function(post){
-    return $http.put('/posts/' + post._id + '/upvote', null, {
-      //pass auth JWT token as an Authorization header
-      headers: {Authorization: 'Bearer ' + auth.getToken()}
-    }).success(function(data){
-      post.upvotes += 1;
-    });
-  };
-  //retrieve a single post
-  o.get = function(id){
-    return $http.get('/posts/' + id).then(function(res){
-      return res.data;
-    });
-  };
-  //adding comments
-  o.addComment = function(id, comment){
-    return $http.post('/posts/' + id + '/comments', comment, {
-      //pass auth JWT token as an Authorization header
-      headers: {Authorization: 'Bearer ' + auth.getToken()}
-    });
-  };
-  //upvote comments
-  o.upvoteComment = function(post, comment){
-    return $http.put('/posts/' + post._id + '/comments/' + comment._id + '/upvote', null, {
-      //pass auth JWT token as an Authorization header
-      headers: {Authorization: 'Bearer ' + auth.getToken()}
-    }).success(function(data){
-      comment.upvotes += 1;
-    });
-  };
-  
-  return o;
-}]);
 
 app.factory('auth', ['$http', '$window', function($http, $window){
   var auth = {};
@@ -117,32 +64,11 @@ app.factory('auth', ['$http', '$window', function($http, $window){
 //controls posts
 app.controller('MainCtrl', [
     '$scope',
-    'posts',
     'auth',
-    function($scope, posts, auth){
-        $scope.posts = posts.posts;
+    function($scope, auth){
         $scope.isLoggedIn = auth.isLoggedIn;
         
-        //add a new post (link is optional)
-        $scope.addPost = function(){
-          //prevent user from entering blank title
-          if(!$scope.title || $scope.title === "") {
-              return;
-          }
-
-          posts.create({
-            title: $scope.title,
-            link: $scope.link
-          });
-          
-          $scope.title = "";
-          $scope.link = "";
-        };
-
-        //upvote a post
-        $scope.incrementUpvotes = function(post){
-          posts.upvote(post);
-        };
+        
     }
 ]);
 
@@ -280,14 +206,8 @@ function($stateProvider, $urlRouterProvider){
     //home state
     $stateProvider.state('home', {
       url: '/home',
-      templateUrl: '/home.html',
-      controller: 'MainCtrl',
-      //query all posts every time home state is entered
-      resolve: {
-        postPromise: ['posts', function(posts){
-          return posts.getAll();
-        }]
-      }
+      templateUrl: 'partials/home.html',
+      controller: 'MainCtrl'
     });
     
     $stateProvider.state('texts', {
@@ -297,17 +217,6 @@ function($stateProvider, $urlRouterProvider){
       
     });
 
-    //posts and comments
-    $stateProvider.state('posts', {
-      url: '/posts/{id}',
-      templateUrl: '/posts.html',
-      controller: 'PostsCtrl', //posts will be controlled with PostCtrl
-      resolve: {
-        post: ['$stateParams', 'posts', function($stateParams, posts){
-          return posts.get($stateParams.id);
-        }]
-      }
-    });
     
     //login state (accessible once logged in)
     $stateProvider.state('login', {

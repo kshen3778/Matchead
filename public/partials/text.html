@@ -1,0 +1,30 @@
+<div class="col-md-6 col-md-offset-3">
+                <div class="page-header">
+                    <h1>Matchead</h1>
+                </div>
+                
+                <div ng-show="error" class="alert alert-danger row">
+                    <span>{{ error.message }}</span>
+                </div>
+               
+                
+                <form ng-submit="analyze()" style="margin-top:30px;">
+                    <h3>Enter Twitter usernames</h3>
+                    
+                    <div class="form-group">
+                        <input type="text" class="form-control textbox_size" placeholder="Your Twitter name" ng-model="person"></input>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="text" class="form-control textbox_size" placeholder="Company's Twitter name" ng-model="company"></input>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Analyze</button>
+                </form>
+                
+                <br>
+                
+                <h2>Political Sentiment Analysis</h2>
+                
+                <canvas id="radar" class="chart chart-radar" chart-data="data" chart-labels="labels"></canvas>
+            </div>
