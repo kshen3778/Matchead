@@ -92,7 +92,7 @@ charts.controller('TextCtrl', [
           console.log($scope.company);
           
           
-          $http.post('/analyze', {person: $scope.person, company: $scope.company}).then(function(data) {
+          $http.post('/analyze', {company: $scope.company}, {headers: {Authorization: 'Bearer ' + auth.getToken()}}).then(function(data) {
             
             console.log(data);
             
@@ -211,7 +211,7 @@ function($stateProvider, $urlRouterProvider){
     
     $stateProvider.state('texts', {
       url: '/texts',
-      templateUrl: '/text.html',
+      templateUrl: 'partials/text.html',
       controller: 'TextCtrl'
       
     });
