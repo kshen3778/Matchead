@@ -189,6 +189,7 @@ router.post('/register', function(req, res, next){
    var user = new User();
    
    user.username = req.body.username;
+   user.twitter = req.body.twitter;
    user.setPassword(req.body.password);
    
    user.save(function(err){

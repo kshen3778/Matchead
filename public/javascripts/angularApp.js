@@ -61,7 +61,6 @@ app.factory('auth', ['$http', '$window', function($http, $window){
   return auth;
 }]);
 
-//controls posts
 app.controller('MainCtrl', [
     '$scope',
     'auth',
@@ -221,7 +220,7 @@ function($stateProvider, $urlRouterProvider){
     //login state (accessible once logged in)
     $stateProvider.state('login', {
       url: '/login',
-      templateUrl: '/login.html',
+      templateUrl: 'partials/login.html',
       controller: 'AuthCtrl',
       onEnter: ['$state', 'auth', function($state, auth){
         if(auth.isLoggedIn()){
@@ -234,7 +233,7 @@ function($stateProvider, $urlRouterProvider){
     //register state (accessible once logged in)
     $stateProvider.state('register', {
       url: '/register',
-      templateUrl: '/register.html',
+      templateUrl: 'partials/register.html',
       controller: 'AuthCtrl',
       onEnter: ['$state', 'auth', function($state, auth){
         if(auth.isLoggedIn()){
