@@ -185,7 +185,7 @@ router.post('/analyze', auth, function(req,res,next){
 
 
 var uploading = multer({
-  dest: '../public/uploads/',
+  dest: 'uploads/',
   limits: {fileSize: 1000000, files:1},
 });
 
@@ -193,6 +193,7 @@ var uploading = multer({
 router.post('/upload', uploading.single('theFile'), function(req, res, next) {
    console.log("file upload");
    console.log(req.file);
+   res.redirect("https://matchead-kshen3778.c9users.io/");
 });
 
 //passport register route
