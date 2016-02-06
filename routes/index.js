@@ -13,8 +13,7 @@ router.get('/', function(req, res, next) {
 var jwt = require('express-jwt');
 var passport = require('passport');
 var mongoose = require('mongoose');
-var Post = mongoose.model('Post');
-var Comment = mongoose.model('Comment');
+var multer = require('multer');
 var User = mongoose.model('User');
 var Company = mongoose.model('Company');
 
@@ -184,6 +183,17 @@ router.post('/analyze', auth, function(req,res,next){
  });
 });
 
+
+var uploading = multer({
+  dest: '../public/uploads/',
+  limits: {fileSize: 1000000, files:1},
+});
+
+
+router.post('/upload', uploading.single('theFile'), function(req, res, next) {
+   console.log("file upload");
+   console.log(req.file);
+});
 
 //passport register route
 router.post('/register', function(req, res, next){

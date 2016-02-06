@@ -87,6 +87,7 @@ charts.controller('TextCtrl', [
   ];*/
         //console.log($scope.testdata);
         
+        
         $scope.analyze = function(){
           console.log($scope.person);
           console.log($scope.company);
@@ -125,6 +126,8 @@ charts.controller('TextCtrl', [
             
           });
         };
+        
+        
         
     }
 ]);
