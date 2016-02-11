@@ -17,6 +17,10 @@ var multer = require('multer');
 var User = mongoose.model('User');
 var Company = mongoose.model('Company');
 
+var nodeUtil = require("util"),
+            fs = require('fs'),
+            PDFParser = require("pdf2json");
+
 //middleware for authenticating jwt tokens
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
@@ -193,7 +197,25 @@ var uploading = multer({
 router.post('/upload', uploading.single('theFile'), function(req, res, next) {
    console.log("file upload");
    console.log(req.file);
-   res.redirect("https://matchead-kshen3778.c9users.io/");
+   
+   //analyze pdf
+   var pdfParser = new PDFParser();
+   //pdfParser.on("pdfParser_dataReady", _.bind(_onPFBinDataReady, self));
+
+   //pdfParser.on("pdfParser_dataError", _.bind(_onPFBinDataError, self));
+   console.log("pdf to json");
+    var pdfFilePath = "KevinShen-RESUME_old.pdf";
+    fs.readFile(pdfFilePath, function (err, pdfBuffer) {
+       console.log("pdf readfile");
+       console.log(err);
+          if (!err) {
+            console.log("pdf in");
+            console.log(pdfBuffer);
+            pdfParser.parseBuffer(pdfBuffer);
+          }
+        });
+   
+   res.redirect("https://matchead-kshen3778.c9users.io/#/texts");
 });
 
 //passport register route
