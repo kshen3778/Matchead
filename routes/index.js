@@ -205,9 +205,18 @@ router.post('/upload', uploading.single('theFile'), function(req, res, next) {
    //pdfParser.on("pdfParser_dataError", _.bind(_onPFBinDataError, self));
    console.log("pdf to json");
    
-   pdfParser.on("pdfParser_dataReady",function(data){
-      //console.log(data.data);
-      console.log(JSON.stringify(data.data.Pages[0]));
+   pdfParser.on("pdfParser_dataReady",function(pdf){
+      console.log('Loaded pdf:\n');
+      var stuff = "";
+        for (var i in pdf.data.Pages) {
+          var page = pdf.data.Pages[i];
+          for (var j in page.Texts) { 
+            var text = page.Texts[j];
+            stuff += text.R[0].T;
+            console.log(text.R[0].T);
+          }
+        }
+      console.log(stuff);
    });
    
     var pdfFilePath = "KevinShen-RESUME_old.pdf";
