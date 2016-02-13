@@ -34,11 +34,19 @@ var client = new Twitter({
 
 
 router.post('/analyze', auth, function(req,res,next){
-   console.log("text analysis");
-   /*indico.personas("I only stay home on Saturday nights to read.")
-      .then(function(response){
-         console.log(response);
-      });*/
+      
+  fs.readFile('KevinShenRESUME.txt', 'utf8', function (err,data) {
+  if (err) {
+    return console.log(err);
+  }
+  indico.namedEntities(data)
+  .then(function(res) {
+    console.log(res);
+  }).catch(function(err) {
+    console.warn(err);
+  });
+ });
+   
       
     
  //get company tweets
@@ -198,38 +206,48 @@ router.post('/upload', uploading.single('theFile'), function(req, res, next) {
    console.log("file upload");
    console.log(req.file);
    
-   //analyze pdf
-   var pdfParser = new PDFParser();
-   //pdfParser.on("pdfParser_dataReady", _.bind(_onPFBinDataReady, self));
+   
 
-   //pdfParser.on("pdfParser_dataError", _.bind(_onPFBinDataError, self));
-   console.log("pdf to json");
    
-   pdfParser.on("pdfParser_dataReady",function(pdf){
-      console.log('Loaded pdf:\n');
-      var stuff = "";
-        for (var i in pdf.data.Pages) {
-          var page = pdf.data.Pages[i];
-          for (var j in page.Texts) { 
-            var text = page.Texts[j];
-            stuff += text.R[0].T;
-            console.log(text.R[0].T);
-          }
-        }
-      console.log(stuff);
-   });
-   
-    var pdfFilePath = "KevinShen-RESUME_old.pdf";
-    fs.readFile(pdfFilePath, function (err, pdfBuffer) {
-       console.log("pdf readfile");
+    var filepath = "KevinShenRESUME.txt";
+    fs.readFile(filepath, 'utf8', function (err, data) {
+       console.log("readfile");
        console.log(err);
           if (!err) {
-            console.log("pdf in");
-            pdfParser.parseBuffer(pdfBuffer);
+            console.log("in");
+            console.log(data);
           }
-        });
+    });
    
-   res.redirect("https://matchead-kshen3778.c9users.io/#/texts");
+   res.redirect("https://matchead-kshen3778.c9users.io/#/profile");
+});
+
+//preload user profile
+router.param('user', function(req,res,next,id){
+    var query = User.findById(id); //find the task
+   
+   query.exec(function(err, user){
+      if(err){
+          return next(err);
+      }
+      if(!user){
+          return next(new Error('Can\'t find user.'));
+      }
+      
+      req.user = user;
+      return next();
+   });
+    
+});
+
+//retrieve a specific user's profile
+router.get('/profile/:user', function(req, res, next){
+    User.findById(req.user, function(err, user){
+        if(err){
+            return next(err);
+        }
+        res.json(user);
+    });
 });
 
 //passport register route
@@ -241,7 +259,6 @@ router.post('/register', function(req, res, next){
    var user = new User();
    
    user.username = req.body.username;
-   user.twitter = req.body.twitter;
    user.setPassword(req.body.password);
    
    user.save(function(err){

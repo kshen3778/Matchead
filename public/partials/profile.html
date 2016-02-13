@@ -1,0 +1,17 @@
+<div class="col-md-6 col-md-offset-3">
+                <div class="page-header">
+                    <h1>Matchead</h1>
+                </div>
+                
+                <div ng-show="error" class="alert alert-danger row">
+                    <span>{{ error.message }}</span>
+                </div>
+                
+                <h2>Username: {{user}}</h2>
+                
+                 <form action="/upload" method="POST" enctype="multipart/form-data">
+                  Upload your resume:
+                  <input type="file" name="theFile"> 
+                  <input type="submit" value="Upload File">
+                </form>
+</div>

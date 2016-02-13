@@ -176,7 +176,6 @@ function($scope, auth){
 
 app.controller('AuthCtrl', [
 '$scope',
-'$state',
 'auth',
 function($scope, $state, auth){
   $scope.user = {};
@@ -198,6 +197,13 @@ function($scope, $state, auth){
       $state.go('home');
     });
   };
+}]);
+
+app.controller('ProfileCtrl', [
+'$scope',
+'auth',
+function($scope, auth){
+  $scope.user = auth.currentUser();
 }]);
 
 app.config([
@@ -243,6 +249,12 @@ function($stateProvider, $urlRouterProvider){
           $state.go('home');
         }
       }]
+    });
+    
+    $stateProvider.state('profile', {
+      url: '/profile',
+      templateUrl: 'partials/profile.html',
+      controller: 'ProfileCtrl'
     });
 
     $urlRouterProvider.otherwise('home');
