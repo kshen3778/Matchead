@@ -231,8 +231,10 @@ var multerUpload = multer({ storage: storage,
             return fileExt.pop();
       };
       
-      if(!getFileExt(file.originalname) === "txt"){
-         console.log("equals");
+      console.log(getFileExt(file.originalname));
+      
+      if(getFileExt(file.originalname) !== "txt"){
+         console.log("doesnt equals");
          cb(null, false);
       }
          
