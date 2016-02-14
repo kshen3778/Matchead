@@ -201,14 +201,55 @@ var uploading = multer({
   limits: {fileSize: 1000000, files:1},
 });
 
+var storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            console.log(req.payload);
+            cb(null, 'uploads/');
+        },
+        filename: function (req, file, cb) {
 
-router.post('/upload', uploading.single('theFile'), function(req, res, next) {
+            var getFileExt = function(fileName){
+                var fileExt = fileName.split(".");
+                if( fileExt.length === 1 || ( fileExt[0] === "" && fileExt.length === 2 ) ) {
+                    return "";
+                }
+                return fileExt.pop();
+            };
+            
+            cb(null, Date.now() + '.' + getFileExt(file.originalname));
+        }
+});
+
+var multerUpload = multer({ storage: storage,
+   
+   fileFilter: function(req,file,cb){
+      var getFileExt = function(fileName){
+            var fileExt = fileName.split(".");
+            if( fileExt.length === 1 || ( fileExt[0] === "" && fileExt.length === 2 ) ) {
+               return "";
+            }
+            return fileExt.pop();
+      };
+      
+      if(!getFileExt(file.originalname) === "txt"){
+         console.log("equals");
+         cb(null, false);
+      }
+         
+      cb(null, true);
+   },
+   limits: {fileSize: 1000000, files:1}
+   
+   }
+);
+
+router.post('/upload', multerUpload.single('theFile'), function(req, res, next) {
    console.log("file upload");
    console.log(req.file);
    
-   
 
    
+   /*
     var filepath = "KevinShenRESUME.txt";
     fs.readFile(filepath, 'utf8', function (err, data) {
        console.log("readfile");
@@ -217,7 +258,7 @@ router.post('/upload', uploading.single('theFile'), function(req, res, next) {
             console.log("in");
             console.log(data);
           }
-    });
+    });*/
    
    res.redirect("https://matchead-kshen3778.c9users.io/#/profile");
 });
@@ -241,13 +282,8 @@ router.param('user', function(req,res,next,id){
 });
 
 //retrieve a specific user's profile
-router.get('/profile/:user', function(req, res, next){
-    User.findById(req.user, function(err, user){
-        if(err){
-            return next(err);
-        }
-        res.json(user);
-    });
+router.get('/profile', function(req, res, next){
+    //TODO: create a special folder for user for their uploads
 });
 
 //passport register route
