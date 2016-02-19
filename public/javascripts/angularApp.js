@@ -1,9 +1,41 @@
 
+/*angular.module('users').directive('fileModel', ['$parse', function ($parse) {
+return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+        var model = $parse(attrs.fileModel);
+        var modelSetter = model.assign;
 
+        element.bind('change', function(){
+            scope.$apply(function(){
+                modelSetter(scope, element[0].files[0]);
+            });
+        });
+    }
+};
+}]);
+*/
 angular.module('chart.js',[]);
 var charts = angular.module('myModule',['chart.js']);
 var app = angular.module('flapperNews', ['ui.router', 'myModule']);
 //var chartApp = angular.module('myApp', ['chart.js']);
+
+app.directive('fileModel', ['$parse', function ($parse) {
+return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+        var model = $parse(attrs.fileModel);
+        var modelSetter = model.assign;
+
+        element.bind('change', function(){
+            scope.$apply(function(){
+                modelSetter(scope, element[0].files[0]);
+            });
+        });
+    }
+};
+}]);
+
 
 app.factory('auth', ['$http', '$window', function($http, $window){
   var auth = {};
@@ -201,9 +233,37 @@ function($scope, $state, auth){
 
 app.controller('ProfileCtrl', [
 '$scope',
+'$state',
 'auth',
-function($scope, auth){
+'$http',
+function($scope, $state, auth, $http){
   $scope.user = auth.currentUser();
+  
+  $scope.uploadFile = function(){
+
+        var file = $scope.myFile;
+        var uploadUrl = "/upload";
+        var fd = new FormData();
+        fd.append('file', file);
+        
+        console.log(fd);
+        
+        $http.post(uploadUrl,fd, {
+        transformRequest: angular.identity,
+        headers: {
+            'Content-Type': undefined,
+            enctype: 'multipart/form-data'
+        }
+        })
+        .success(function(){
+          console.log("success!!");
+          //$state.go('profile');
+        })
+        .error(function(){
+          console.log("error!!");
+          //$state.go('profile');
+        });
+    };
 }]);
 
 app.config([

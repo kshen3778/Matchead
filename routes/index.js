@@ -223,44 +223,26 @@ var storage = multer.diskStorage({
 var multerUpload = multer({ storage: storage,
    
    fileFilter: function(req,file,cb){
-      var getFileExt = function(fileName){
-            var fileExt = fileName.split(".");
-            if( fileExt.length === 1 || ( fileExt[0] === "" && fileExt.length === 2 ) ) {
-               return "";
-            }
-            return fileExt.pop();
-      };
-      
-      console.log(getFileExt(file.originalname));
-      
-      if(getFileExt(file.originalname) !== "txt"){
-         console.log("doesnt equals");
-         cb(null, false);
-      }
-         
-      cb(null, true);
+        var type = file.mimetype;
+        console.log(type);
+        if (type == "text/plain") {
+          cb(null, true);
+        }else {
+          cb(null, false);
+        }
    },
    limits: {fileSize: 1000000, files:1}
    
    }
 );
 
-router.post('/upload', multerUpload.single('theFile'), function(req, res, next) {
-   console.log("file upload");
-   console.log(req.file);
+router.post('/upload', multerUpload.single('file'), function(req, res, next) {
+
+    console.log("file upload");
+    console.log(req.file);
+    
    
 
-   
-   /*
-    var filepath = "KevinShenRESUME.txt";
-    fs.readFile(filepath, 'utf8', function (err, data) {
-       console.log("readfile");
-       console.log(err);
-          if (!err) {
-            console.log("in");
-            console.log(data);
-          }
-    });*/
    
    res.redirect("https://matchead-kshen3778.c9users.io/#/profile");
 });

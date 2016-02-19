@@ -30,7 +30,6 @@ bower_components
 # Optional npm cache directory
 .npm
 
-
 # Optional REPL history
 .node_repl_history
 
@@ -39,3 +38,6 @@ bower_components
 
 #Mongo
 data
+
+#Local file upload
+uploads
