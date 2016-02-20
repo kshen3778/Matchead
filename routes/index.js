@@ -236,15 +236,38 @@ var multerUpload = multer({ storage: storage,
    }
 );
 
-router.post('/upload', multerUpload.single('file'), function(req, res, next) {
+router.post('/upload', multerUpload.single('file'), auth, function(req, res, next) {
 
     console.log("file upload");
     console.log(req.file);
+    console.log(req.payload.username);
     
-   
+    var source = fs.createReadStream('uploads/' + req.file.filename);
+    
+    var dir = 'uploads/' + req.payload.username;
+    console.log(dir);
+    if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir);
+    }
+    
+    var dest = fs.createWriteStream(dir + '/' + req.file.filename);
+    
+    source.pipe(dest);
+    source.on('end', function() {
+        /* copied */ 
+        console.log("copied");
+        //res.redirect("https://matchead-kshen3778.c9users.io/#/profile");
+        res.json({});
+    });
+    source.on('error', function(err) {
+        /* error */ 
+        if(err){
+            console.log("error copying");
+        }
+    });
 
    
-   res.redirect("https://matchead-kshen3778.c9users.io/#/profile");
+   
 });
 
 //preload user profile

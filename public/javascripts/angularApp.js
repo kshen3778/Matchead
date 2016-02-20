@@ -252,7 +252,8 @@ function($scope, $state, auth, $http){
         transformRequest: angular.identity,
         headers: {
             'Content-Type': undefined,
-            enctype: 'multipart/form-data'
+            enctype: 'multipart/form-data',
+            Authorization: 'Bearer ' + auth.getToken()
         }
         })
         .success(function(){
@@ -261,6 +262,7 @@ function($scope, $state, auth, $http){
         })
         .error(function(){
           console.log("error!!");
+          $scope.error = "Please upload as a text file (.txt)."
           //$state.go('profile');
         });
     };
