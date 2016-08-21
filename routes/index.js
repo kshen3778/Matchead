@@ -203,7 +203,6 @@ var uploading = multer({
 
 var storage = multer.diskStorage({
         destination: function (req, file, cb) {
-            console.log(req.payload);
             cb(null, 'uploads/');
         },
         filename: function (req, file, cb) {
@@ -245,26 +244,52 @@ router.post('/upload', multerUpload.single('file'), auth, function(req, res, nex
     var source = fs.createReadStream('uploads/' + req.file.filename);
     
     var dir = 'uploads/' + req.payload.username;
-    console.log(dir);
+    //create directory if it doesn't exist
     if (!fs.existsSync(dir)){
         fs.mkdirSync(dir);
     }
     
-    var dest = fs.createWriteStream(dir + '/' + req.file.filename);
-    
-    source.pipe(dest);
-    source.on('end', function() {
-        /* copied */ 
-        console.log("copied");
-        //res.redirect("https://matchead-kshen3778.c9users.io/#/profile");
-        res.json({});
-    });
-    source.on('error', function(err) {
-        /* error */ 
-        if(err){
-            console.log("error copying");
-        }
-    });
+   // console.log(JSON.stringify(req.payload));
+    //delete the old resume
+    if(req.payload.resume != ""){
+        var filePath; 
+        User.findOne({username: req.payload.username}, function(err, user){
+        
+            if(err){return err;}
+            filePath = user.resume;
+            console.log("File path: " + filePath);
+            fs.unlinkSync(filePath);
+            
+            var dest = fs.createWriteStream(dir + '/' + req.file.filename);
+            var resumepath = "uploads/" + req.payload.username + "/" + req.file.filename;
+            console.log(resumepath);
+            
+            source.pipe(dest);
+            source.on('end', function() {
+                /* copied */ 
+                fs.unlinkSync('uploads/' + req.file.filename); //remove original uploaded file
+                console.log("copied");
+                User.update({username: req.payload.username},{$set: {resume: resumepath}}, function(err, result){
+                  
+                  if(err){
+                      return err;
+                  }
+                  res.json(result);
+                  
+               });
+                //res.redirect("https://matchead-kshen3778.c9users.io/#/profile");
+            });
+            source.on('error', function(err) {
+                /* error */ 
+                if(err){
+                    console.log("error copying");
+                }
+            });
+        });
+        
+        
+    }
+
 
    
    
@@ -302,6 +327,7 @@ router.post('/register', function(req, res, next){
    var user = new User();
    
    user.username = req.body.username;
+   user.resume = "";
    user.setPassword(req.body.password);
    
    user.save(function(err){
